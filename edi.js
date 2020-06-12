@@ -9,3 +9,4 @@ import './plugins/code/index.js';
 import './plugins/styles/index.js';
 import './plugins/tableHandles/index.js';
 import './plugins/imageResizeHandle/index.js';
+import './plugins/clean/index.js';

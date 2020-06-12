@@ -18,43 +18,43 @@
 	outline-offset:1px;
 }
 
-#qgRteToolbar {
+.qgRteToolbar {
 	position:absolute;
 	top:90px;
 	left:90px;
-	z-index:1999;
-	box-shadow: 0 0 10px rgba(0,0,0,.4);
+	z-index:4;
 	font-size:14px;
 	font-family:Arial;
-    background-color:#222;
     color:#fff;
     max-width:297px;
     transition:top .14s;
     transition-property:top, left, opacity;
     will-change:top, left;
+	box-shadow: 0 0 10px rgba(0,0,0,.4);
+    background-color:#222;
     padding:1px;
 }
-#qgRteToolbar > div {
+.qgRteToolbar > div {
     display:flex;
     flex-flow:wrap;
-    box-sizing: border-box;
+    xbox-sizing: border-box;
 }
-#qgRteToolbar .-more {
-    color:#fff;
-    display:none;
+.qgRteToolbar > .-more {
+    display:flex !important;
+    transition:max-height .2s;
+    max-height:100vh;
 }
-#qgRteToolbar .-more.-show {
-    display:flex;
-}
-#qgRteToolbar > .-more.c1-focusIn {
-	display:flex !important;
+.qgRteToolbar > .-more[hidden]:not(:focus-within) {
+    transition-delay:.4s;
+    max-height:0;
+    overflow:hidden;
 }
 
-body #qgRteToolbar [hidden] {
+body .qgRteToolbar [hidden] {
     display:none;
 }
-#qgRteToolbar input,
-#qgRteToolbar textarea {
+.qgRteToolbar input,
+.qgRteToolbar textarea {
 	font-size:inherit;
 	background:inherit;
 	box-sizing:border-box;
@@ -63,35 +63,35 @@ body #qgRteToolbar [hidden] {
 	padding:3px;
     color:#fff;
 }
-#qgRteToolbar input[type=checkbox] {
+.qgRteToolbar input[type=checkbox] {
 	width:auto;
 }
-#qgRteToolbar table {
+.qgRteToolbar table {
     margin:0;
     flex: 1 1 100%;
     border-collapse:collapse;
     width: 100%;
 }
 
-#qgRteToolbar td {
+.qgRteToolbar td {
 	height:39px;
     box-sizing:border-box;
     vertical-align: middle;
     padding:8px 10px;
 }
-#qgRteToolbar input {
+.qgRteToolbar input {
     border:none;
     background:#ccc;
     color:#000;
     margin:0;
     padding:.3em .6em;
 }
-#qgRteToolbar input:focus,
-#qgRteToolbar input:hover {
+.qgRteToolbar input:focus,
+.qgRteToolbar input:hover {
     background:#fff;
 }
 
-#qgRteToolbar .-item {
+.qgRteToolbar .-item {
     display:flex;
     align-items:center;
     justify-content: center;
@@ -101,22 +101,21 @@ body #qgRteToolbar [hidden] {
     width:36px;
 	height:36px;
     padding:5px 8px;
-    xpadding:16px;
     outline:.5px solid #444;
     margin:.5px;
 }
-#qgRteToolbar .-item:hover {
+.qgRteToolbar .-item:hover {
     background:#555;
 }
 
-#qgRteToolbar .-item.-select {
+.qgRteToolbar .-item.-select {
     width:73px;
 	position:relative;
     padding:5px 8px;
     flex:1 1 auto;
     padding-right:16px;
 }
-#qgRteToolbar .-item.-select:after {
+.qgRteToolbar .-item.-select:after {
     content:'▼';
     position:absolute;
     top:50%;
@@ -124,18 +123,18 @@ body #qgRteToolbar [hidden] {
     transform:translateY(-50%);
     font-size:.8em;
 }
-#qgRteToolbar .-item.-button {
+.qgRteToolbar .-item.-button {
     width:auto;
     flex:auto;
 }
 
-#qgRteToolbar .-state {
+.qgRteToolbar .-state {
 	max-width:125px;
 	overflow:hidden;
 	white-space:nowrap;
 }
 
-#qgRteToolbar .-options {
+.qgRteToolbar .-options {
     display:none;
     padding:3px 3px 3px 3px;
 	position: absolute;
@@ -150,23 +149,23 @@ body #qgRteToolbar [hidden] {
 	box-shadow:1px 1px 2px rgba(0,0,0,.4);
 	min-width:100%;
 }
-#qgRteToolbar .-options > * {
+.qgRteToolbar .-options > * {
 	padding:1px 4px;
 	display:block !important;
 	clear:both !important;
 	width:auto !important;
 	border-bottom:1px solid #eee;
 }
-#qgRteToolbar .-options > .-selected {
+.qgRteToolbar .-options > .-selected {
 	background-color:#49F;
 	color:#fff;
 }
 
-#qgRteToolbar .-item.active {
+.qgRteToolbar .-item.active {
     color:#0099ff;
 }
 
-#qgRteToolbar .-item::before {
+.qgRteToolbar .-item::before {
 	font-family:qgRte;
 	display:inline-block;
 	text-align:center;
@@ -175,16 +174,16 @@ body #qgRteToolbar [hidden] {
     padding-left: 0px;
 }
 
-#qgRteToolbar .-item.-Bold::before                 { content:'\e02a'; }
-#qgRteToolbar .-item.-Italic::before               { content:'\e02b'; }
-#qgRteToolbar .-item.-Insertunorderedlist::before  { content:'\e00a'; }
-#qgRteToolbar .-item.-Insertorderedlist::before    { content:'\e00b'; }
-#qgRteToolbar .-item.-Code::before                 { content:'\e017'; }
-#qgRteToolbar .-item.-Link::before                 { content:'\e011'; }
-#qgRteToolbar .-item.-Unlink::before               { content:'\e012'; }
-#qgRteToolbar .-item.-Removeformat::before         { content:'\e01d'; }
-#qgRteToolbar .-item.-Underline::before            { content:'\e02c'; }
-#qgRteToolbar .-item.-Strikethrough::before        { content:'\e02d'; }
-#qgRteToolbar .-item.-Hr::before                   { content:'\e01c'; }
-#qgRteToolbar .-item.-Table::before                { content:'\e01b'; }
-#qgRteToolbar .-item.-ShowInvisibleChars::before   { content:'\e02e'; }
+.qgRteToolbar .-item.-Bold::before                 { content:'\e02a'; }
+.qgRteToolbar .-item.-Italic::before               { content:'\e02b'; }
+.qgRteToolbar .-item.-Insertunorderedlist::before  { content:'\e00a'; }
+.qgRteToolbar .-item.-Insertorderedlist::before    { content:'\e00b'; }
+.qgRteToolbar .-item.-Code::before                 { content:'\e017'; }
+.qgRteToolbar .-item.-Link::before                 { content:'\e011'; }
+.qgRteToolbar .-item.-Unlink::before               { content:'\e012'; }
+.qgRteToolbar .-item.-Removeformat::before         { content:'\e01d'; }
+.qgRteToolbar .-item.-Underline::before            { content:'\e02c'; }
+.qgRteToolbar .-item.-Strikethrough::before        { content:'\e02d'; }
+.qgRteToolbar .-item.-Hr::before                   { content:'\e01c'; }
+.qgRteToolbar .-item.-Table::before                { content:'\e01b'; }
+.qgRteToolbar .-item.-ShowInvisibleChars::before   { content:'\e02e'; }

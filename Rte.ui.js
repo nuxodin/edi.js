@@ -3,103 +3,108 @@
 import './Rte.js';
 import './x/c1Dom.js';
 
-window.Rte.ui = {
-	init() {
-		var my = this;
-		my.div = document.createElement('div');
-		my.div.id = 'qgRteToolbar';
-		my.div.addEventListener('mousedown',  e=>e.stopPropagation());
-		my.div.addEventListener('touchstart', e=>e.stopPropagation());
+class EdiUi {
+	constructor() {
+		this.items = {}
 
-		Rte.addUiElement(my.div);
+		this.div = document.createElement('div');
+		this.div.className = 'qgRteToolbar';
+		this.div.addEventListener('mousedown',  e=>e.stopPropagation());
+		this.div.addEventListener('touchstart', e=>e.stopPropagation());
 
-		my.mainContainer = document.createElement('div');
-		my.mainContainer.className = '-main';
-		my.div.appendChild(my.mainContainer);
+		Rte.addUiElement(this.div);
 
-		my.moreContainer = document.createElement('div');
-		my.moreContainer.className = '-more q1Rst';
-		my.div.appendChild(my.moreContainer);
+		this.mainContainer = document.createElement('div');
+		this.mainContainer.className = '-main';
+		this.div.append(this.mainContainer);
+
+		this.moreContainer = document.createElement('div');
+		this.moreContainer.className = '-more q1Rst';
+		this.moreContainer.hidden = true;
+		this.div.append(this.moreContainer);
 
 		Rte.on('activate', ()=>{
-			var config = Rte.ui.config['rteDef']; // todo
-			my.activeItems = {};
-			var appendTo = my.mainContainer;
-			var addItem = function(n) {
-				if (!my.items[n]) return;
-				my.activeItems[n] = my.items[n];
-				appendTo.appendChild(my.items[n].el);
+			var config = this.config['rteDef']; // todo
+			this.activeItems = {};
+			var addItem = n=>{
+				if (!this.items[n]) return;
+				this.activeItems[n] = this.items[n];
+				appendTo.append(this.items[n].el);
 			};
+			var appendTo = this.mainContainer;
 			config.main.forEach(addItem);
-			appendTo = my.moreContainer;
+			appendTo = this.moreContainer;
 			config.more.forEach(addItem);
-			if (my.activeItems) {
-				document.body.appendChild(my.div);
-				my.div.style.display = 'block';
-				my.div.style.opacity = '0';
-				my.div.style.pointerEvents = 'none';
-				Rte.ui.mouseover = 0;
+
+			if (Object.keys(this.activeItems).length) {
+				document.body.append(this.div);
+				this.div.style.opacity = '0';
+				this.div.style.pointerEvents = 'none';
+				this.mouseover = 0;
 				setTimeout(()=>{
-					my.div.c1ZTop();
-					my.div.style.opacity = '1';
-					my.div.style.pointerEvents = '';
+					this.div.c1ZTop();
+					this.div.style.opacity = '1';
+					this.div.style.pointerEvents = '';
 				},100);
-				document.addEventListener('keydown', shortcutListener, false);
 			}
 		});
 		Rte.on('deactivate', ()=>{
-			document.removeEventListener('keydown', shortcutListener, false);
 			setTimeout(()=>{ // need timeout because inputs inside have to blur first (ff, no chrome)
-				!Rte.active && my.div.parentNode && document.body.removeChild(my.div);
+				!Rte.active && this.div.remove() // && this.div.parentNode ??
 			},1);
 		});
 		Rte.on('selectionchange', ()=>{
 			//if (!Rte.element) return; needed?
-			for (let [name,item] of Object.entries(my.activeItems)){
+			for (let [name,item] of Object.entries(this.activeItems)){
 				if (!item.enable || item.enable(Rte.element)) {
 					item.enabled = true;
-					item.el.removeAttribute('hidden');
+					item.el.hidden = false;
 					if (item.check) {
 						const act = item.check(Rte.element) ? 'add' : 'remove';
 						item.el.classList[act]('active');
 					}
 				} else {
 					item.enabled = false;
-					item.el.setAttribute('hidden',true);
+					item.el.hidden = true;
 				}
 			}
 		});
+
+		// shortcut-listener
 		var shortcutListener = e=>{
-			if (e.ctrlKey && !e.metaKey && !e.shiftkey && !e.altkey) {
-				var char = String.fromCharCode(e.which).toLowerCase();
-				for (let [name,item] of Object.entries(my.activeItems)){
-					if (item.enabled && item.shortcut === char) {
-						let event = new MouseEvent('mousedown',{'bubbles': true,'cancelable': true});
-						item.el.dispatchEvent(event);
-		                e.preventDefault();
-					}
+			if (!e.ctrlKey || e.metaKey || e.shiftkey || e.altkey) return;
+			for (let [name,item] of Object.entries(this.activeItems)){
+				if (!item.enabled) continue;
+				if (item.shortcut === e.code || item.shortcut === e.key) {
+					let event = new MouseEvent('mousedown',{'bubbles': true,'cancelable': true});
+					item.el.dispatchEvent(event);
+					e.preventDefault();
 				}
 			}
 		};
-		/* ui hover */
-		var moreTimeout = null;
-		my.div.addEventListener('mouseenter',()=>{
-			clearTimeout(moreTimeout);
-			moreTimeout = setTimeout(()=>{
-				//Rte.ui.div.querySelector('.-more').style.display = 'flex';
-				Rte.ui.div.querySelector('.-more').classList.add('-show');
-			},300);
-			Rte.ui.mouseover = 1;
+		Rte.on('activate', ()=> document.addEventListener('keydown', shortcutListener, false) );
+		Rte.on('deactivate', ()=> document.removeEventListener('keydown', shortcutListener, false) );
+
+		// show/hide more
+		this.div.addEventListener('mouseenter', ()=> this.moreContainer.hidden = false );
+		this.div.addEventListener('mouseleave', ()=> this.moreContainer.hidden = true );
+
+
+		// move toolbar to selection
+		Rte.on('selectionchange', async ()=>{
+			if (!Rte.active) return;
+			if (this.mouseover) return;
+			const margin = getSelection().isCollapsed ? 100 : 20;
+			const {Placer} = await import('./x/Placer.js');
+			const placer = new Placer(this.div, {
+				x:'center',
+				y:'after',
+				margin,
+			});
+			placer.toClientRect(qgSelection.rect());
 		});
-		my.div.addEventListener('mouseleave',()=>{
-			clearTimeout(moreTimeout);
-			moreTimeout = setTimeout(()=>{
-				//Rte.ui.div.querySelector('.-more').style.display = 'none';
-				Rte.ui.div.querySelector('.-more').classList.remove('-show');
-			},300);
-			Rte.ui.mouseover = 0;
-		});
-	},
+
+	}
 	setItem(name, opt) {
 		if (!opt.el) {
 			opt.el = document.createElement('span');
@@ -124,7 +129,7 @@ window.Rte.ui = {
 		opt.shortcut && opt.el.setAttribute('title','ctrl+'+opt.shortcut);
 		this.items[name] = opt;
 		return opt.el;
-	},
+	}
 	setSelect(name, opt) {
 		let timeout = null;
 		let el = c1.dom.fragment('<div class="-item -select"><div class=-state></div><div class=-options></div></div>').firstChild;
@@ -135,24 +140,7 @@ window.Rte.ui = {
 		opt.el = el;
 		this.setItem(name,opt);
 		return opts;
-	},
-	items:{}
+	}
 };
 
-Rte.ui.init();
-
-Rte.on('selectionchange', async ()=>{
-	if (!Rte.active) return;
-	if (Rte.ui.mouseover) return;
-	const margin = getSelection().isCollapsed ? 100 : 20;
-	//await c1.import('./../c1/Placer.js?qgUniq=674ed19');
-
-	const {Placer} = await import('./x/Placer.js');
-
-	const placer = new Placer(Rte.ui.div, {
-		x:'center',
-		y:'after',
-		margin,
-	});
-	placer.toClientRect(qgSelection.rect());
-});
+Rte.ui = new EdiUi();

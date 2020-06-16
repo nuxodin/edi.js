@@ -130,12 +130,12 @@ window.Rte = {
             if (!Rte.isTarget(e.target)) return;
 	        Rte.checkSelection();
 		},true);
-		root.addEventListener('beforeunload',()=>{ // blur before unload (save), needed?
-			if (Rte.active) {
-				Rte.active.blur();
-				// let event = new Event('blur',{'bubbles': true,'cancelable': true});
-				// Rte.active.dispatchEvent(event);
-			}
+		root.addEventListener('input',e=>{
+			if (!Rte.active || !Rte.isTarget(e.target)) return;
+			Rte.trigger('real-input');
+		},true);
+		addEventListener('beforeunload',()=>{ // blur before unload (save), needed?
+			Rte.active && Rte.active.blur();
 		},true);
 	}
 };

@@ -267,7 +267,9 @@ Rte.ui.config = {
 
 	function addMarks(){
 		// remove
-		getSelection().anchorNode.parentNode.querySelectorAll('.qgRte-mark-char').forEach(function(marker){
+		var anchor = getSelection().anchorNode;
+		if (!anchor) return;
+		anchor.parentNode.querySelectorAll('.qgRte-mark-char').forEach(function(marker){
 			if (!marker.firstChild) marker.remove();
 		});
 
@@ -284,10 +286,11 @@ Rte.ui.config = {
 	}
 	function removeMarks(){
 		Rte.active.querySelectorAll('.qgRte-mark-char').forEach(el=>el.removeNode())
-		Rte.active.normalize();
+		setTimeout(()=>Rte.active.normalize())
 	}
 	Rte.on('activate',addMarks);
-	Rte.on('input',addMarks);
+//	Rte.on('input',addMarks);
+	Rte.on('real-input',addMarks);
 	Rte.on('deactivate',removeMarks);
 
 
@@ -321,6 +324,61 @@ Rte.ui.config = {
 
 }
 
+/* test with positions
+{ // show line-breaks
+	document.head.append(
+		c1.dom.fragment(
+		'<style>'+
+		'.qgRte-mark-char.-Br::before { '+
+		'	content:"↵";'+
+		'	display:inline;'+
+		'	display:contents;'+
+		'	opacity:.3;'+
+		'	margin-left:.2em; '+
+		'	font-size:.82em; '+
+		'	pointer-events:none; '+ // I don't think it'll do any good
+		'}'+
+		'</style>')
+	);
+
+	const markerMap = new Map();
+	function addMarks(){
+		if (!Rte.active) return;
+		Rte.active.querySelectorAll('br').forEach(br=>{
+			let marker = markerMap.get(br);
+			if (!marker) {
+				marker = document.createElement('span');
+				marker.innerHTML = '↵';
+				marker.style.position = 'absolute';
+				marker.style.opacity = .6;
+				markerMap.set(br, marker);
+			}
+			var rect = br.getBoundingClientRect();
+			marker.style.top = rect.top - 3 + 'px';
+			marker.style.left = rect.left + 4 + 'px';
+			document.body.append(marker);
+		});
+
+		const entries = markerMap.entries();
+		for (let [br, marker] of entries) {
+			if (br.parentNode) return;
+			marker.remove();
+			markerMap.delete(br);
+		}
+	}
+	function removeMarks(){
+		const entries = markerMap.entries();
+		for (let [br, marker] of entries) {
+			marker.remove();
+			markerMap.delete(br);
+		}
+	}
+	Rte.on('deactivate',removeMarks); // done by script above
+	Rte.on('activate',addMarks);
+	Rte.on('real-input',addMarks);
+}
+*/
+
 { // show line-breaks
 	document.head.append(
 		c1.dom.fragment(
@@ -345,13 +403,12 @@ Rte.ui.config = {
 			br.before(span);
 		});
 	}
-	/*
-	function removeMarks(){
-		Rte.active.querySelectorAll('.qgRte-mark-char').forEach(el=>el.removeNode())
-		Rte.active.normalize();
-	}
-	Rte.on('deactivate',removeMarks); // done by script above
-	*/
+	// function removeMarks(){
+	// 	Rte.active.querySelectorAll('.qgRte-mark-char').forEach(el=>el.removeNode())
+	// 	Rte.active.normalize();
+	// }
+	// Rte.on('deactivate',removeMarks); // done by script above
 	Rte.on('activate',addMarks);
-	Rte.on('input',addMarks);
+	//Rte.on('input',addMarks);
+	Rte.on('real-input',addMarks);
 }

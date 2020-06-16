@@ -321,7 +321,7 @@ if (n.style.position==='absolute') { n.style.position = ''; }
 
 
 function replaceNode(el, newEl){
-	el.replace(newEl);
+	el.replaceWith(newEl);
 	newEl.appendChild(el);
 	el.removeNode();
 }

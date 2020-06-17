@@ -1,10 +1,12 @@
 /* Copyright (c) 2016 Tobias Buschor https://goo.gl/gl0mbf | MIT License https://goo.gl/HgajeK */
+/* zzz */
 @font-face {
   font-family: 'qgRte';
   src: url('font/tinymce.woff?v=4.5.0') format('woff');
   font-weight: normal;
   font-style: normal;
 }
+/* */
 
 [contenteditable]:focus td {
 	outline:1px dashed #F4E2DC;
@@ -91,6 +93,10 @@ body .qgRteToolbar [hidden] {
     background:#fff;
 }
 
+.qgRteToolbar svg {
+    fill:currentcolor;
+}
+
 .qgRteToolbar .-item {
     display:flex;
     align-items:center;
@@ -98,11 +104,11 @@ body .qgRteToolbar [hidden] {
 	box-sizing:border-box;
 	cursor:pointer;
 	line-height:1.2;
-    width:36px;
-	height:36px;
-    padding:5px 8px;
+    width:2.8em;
+	height:2.8em;
     outline:.5px solid #444;
     margin:.5px;
+    padding:.8em;
 }
 .qgRteToolbar .-item:hover {
     background:#555;
@@ -161,6 +167,7 @@ body .qgRteToolbar [hidden] {
 	color:#fff;
 }
 
+/* zzz */
 .qgRteToolbar .-item.active {
     color:#0099ff;
 }

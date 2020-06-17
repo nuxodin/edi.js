@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang=de>
+    <meta charset="utf-8">
+    <title>edi.js - Tests</title>
+    <script src="../edi.js" type=module></script>
+    <script src="./data/test.js" type=module></script>
+    <link rel="stylesheet" href="../edi.css">
+
+
+    <style>
+        html {
+            --edi:true;
+        }
+        body {
+            padding:4em;
+            display:flex;
+        }
+        img {
+            border:1px solid #8888;
+        }
+        .Big {
+            font-size:2em;
+        }
+        [contenteditable] {
+            outline:1px solid red;
+        }
+    </style>
+
+<body>
+
+<div>
+    <div contenteditable>
+<p>test</p>
+<ul>
+    <li> test asdf
+    <li> test asdf
+</ul>
+<table>
+    <tr>
+        <td>a
+        <td>b
+    <tr>
+        <td>c
+        <td>d
+</table>
+<img alt="image" src="./data/test.png">
+    </div>
+
+    <hr>
+
+    <span contenteditable >
+span <br>
+span
+<img alt="image" src="./data/test.png" height=40>
+span
+    </span>
+
+    <hr>
+
+    <span contenteditable style="display:inline-block">
+span <br>
+inline-block 1
+<img alt="image" src="./data/test.png" height=40>
+span
+    </span>
+    <span contenteditable style="display:inline-block">
+span <br>
+inline-block 2
+<img alt="image" src="./data/test.png" height=40>
+span
+    </span>
+
+    <hr>
+</div>

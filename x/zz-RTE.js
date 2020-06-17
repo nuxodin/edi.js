@@ -1,7 +1,6 @@
 /* Copyright (c) 2016 Tobias Buschor https://goo.gl/gl0mbf | MIT License https://goo.gl/HgajeK */
 'use strict';
 {
-	throw('not used!');
 	c1.RTE = {};
 	/*
 	c1.RTE.formatBlock = function(tag) {

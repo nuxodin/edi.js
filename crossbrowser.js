@@ -1,5 +1,5 @@
 /* Copyright (c) 2016 Tobias Buschor https://goo.gl/gl0mbf | MIT License https://goo.gl/HgajeK */
-// firefox resize images: enableObjectResizing
+
 window.qgQueryCommandState = function(cmd) {
 	try{
 		return document.queryCommandState(cmd);
@@ -20,7 +20,6 @@ window.qgExecCommand = function(com,x,val) {
 	}
 	switch (com) {
 		case 'formatblock':
-			document.execCommand(com,x,'<'+val+'>');
 			document.execCommand(com,x,val);
 			break;
 		default:
@@ -113,7 +112,7 @@ window.qgSelection = {
 	}
 };
 
-// if contenteditable inside a link
+// if contenteditable inside a link: do not follow
 document.addEventListener('click', e=>{
 	if (e.button !== 0) return;
 	e.target.isContentEditable && e.preventDefault();
@@ -224,3 +223,15 @@ document.addEventListener('input',e=>{
 		e.target.lastChild.remove();
 	}
 });
+
+/* prevent select on contextmenu */
+document.addEventListener('mousedown',e=>{
+	if (!e.target.isContentEditable) return;
+	e.which === 3 && e.preventDefault();
+});
+
+
+//qgExecCommand('enableInlineTableEditing', false, false); // The handles are disabled by default since Firefox 64
+//document.addEventListener('DOMContentLoaded',function(){
+	//qgExecCommand('enableObjectResizing', false, false); // The handles are disabled by default since Firefox 64
+//});

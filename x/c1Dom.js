@@ -1,6 +1,5 @@
 /* Copyright (c) 2016 Tobias Buschor https://goo.gl/gl0mbf | MIT License https://goo.gl/HgajeK */
-!function() { 'use strict';
-if (c1.dom) return; // zzz if its a module
+
 
 var w = window,
 	d = document,
@@ -72,6 +71,7 @@ c1.ext(poly, elProto, false, true);
 poly.closest = function(sel){ return this.parentNode.closest(sel); };
 c1.ext(poly, Text.prototype, false, true);
 
+/*
 c1.dom.ready = new Promise(function(res){document.addEventListener('DOMContentLoaded',res);});
 
 // iterators
@@ -83,5 +83,4 @@ if (w.Symbol && Symbol.iterator) {  // no ie11 :(
 		proto[Symbol.iterator] = Array.prototype[Symbol.iterator];
 	});
 }
-
-}();
+*/

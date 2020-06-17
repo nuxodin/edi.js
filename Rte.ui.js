@@ -110,6 +110,7 @@ class EdiUi {
 			opt.el = document.createElement('span');
 			opt.el.className = '-item -'+name;
 		}
+
 		if (opt.cmd) {
 			if (!opt.click && opt.click != false) opt.click = ()=>qgExecCommand(opt.cmd, false);
 			if (!opt.check && opt.check != false) opt.check = ()=>qgQueryCommandState(opt.cmd);

@@ -21,9 +21,10 @@ export class NodeCleaner {
 	}
 	cleanContents(el, andChildren) {
 		if (!el) return;
-		Array.from(el.childNodes).forEach(child => this.clean(child, andChildren))
-		//for (let child of el.childNodes) this.clean(child, andChildren);
-
+		for (let child of Array.from(el.childNodes)) {
+			this.clean(child, andChildren)
+		}
+		//Array.from(el.childNodes).forEach(child => this.clean(child, andChildren))
 	}
 	clean(el, andChildren) {
 		if (el.nodeType === 1) {
@@ -40,11 +41,6 @@ export class NodeCleaner {
 		} else if (el.nodeType === 3) {
 			if (this.conf['removeNbsp']) el.data = el.data.replace(/\u00a0/g,' ');
 			if (this.conf['replaceCombiningChars']) nodeReplaceCombiningDiaeresis(el);
-			// if (el.previousSibling && el.previousSibling.nodeType === 3) { // verbinden
-			// 	el.previousSibling.data += el.data;
-			// 	el.remove();
-			// }
-			// if (el.data === '') el.remove();
 		} else {
 			this.conf['removeComments'] && el.remove();
 		}
@@ -69,7 +65,6 @@ export class NodeCleaner {
 		if (!display) {
 			display = blockLikeTags[el.tagName] ? 'block' : 'inline';
 		}
-
 
 		var nEl = notInline[display] ? document.createElement('div') : document.createElement('span');
 		/* dont loose computed styles. Problem?: links keep colored */

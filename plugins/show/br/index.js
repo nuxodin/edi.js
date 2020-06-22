@@ -14,8 +14,8 @@ document.head.append(
 );
 
 function addMarks(){
-    if (!Rte.active) return;
-    Rte.active.querySelectorAll('br').forEach(br=>{
+    if (!edi.active) return;
+    edi.active.querySelectorAll('br').forEach(br=>{
         if (br.previousElementSibling?.classList.contains('-Br')) return;
         var span = document.createElement('span');
         span.className = 'qgRte-mark-char -Br';
@@ -23,16 +23,17 @@ function addMarks(){
     });
 }
 // function removeMarks(){
-// 	Rte.active.querySelectorAll('.qgRte-mark-char').forEach(el=>el.removeNode())
-// 	Rte.active.normalize();
+// 	edi.active.querySelectorAll('.qgRte-mark-char').forEach(el=>el.removeNode())
+// 	edi.active.normalize();
 // }
-// Rte.on('deactivate',removeMarks); // done by script above
-Rte.on('activate',addMarks);
-Rte.on('input',addMarks);
+// addEventListener('edi-deactivate',removeMarks); // done by script above
+addEventListener('edi-activate',addMarks);
+addEventListener('edi-input',addMarks);
 
 
 // firefox 77
-document.addEventListener('selectionchange',function(e){ // make somethin like this for every non-editable element?
+// if selection between br and marker, move selection
+document.addEventListener('c1-selectionchange-write',function(e){ // make somethin like this for every non-editable element?
     const sel = getSelection();
     var next = sel.anchorNode.childNodes[sel.anchorOffset];
     if (next?.nodeName !== 'BR') return;
@@ -65,8 +66,8 @@ document.addEventListener('selectionchange',function(e){ // make somethin like t
 
 	const markerMap = new Map();
 	function addMarks(){
-		if (!Rte.active) return;
-		Rte.active.querySelectorAll('br').forEach(br=>{
+		if (!edi.active) return;
+		edi.active.querySelectorAll('br').forEach(br=>{
 			let marker = markerMap.get(br);
 			if (!marker) {
 				marker = document.createElement('span');
@@ -95,8 +96,8 @@ document.addEventListener('selectionchange',function(e){ // make somethin like t
 			markerMap.delete(br);
 		}
 	}
-	Rte.on('deactivate',removeMarks); // done by script above
-	Rte.on('activate',addMarks);
-	Rte.on('real-input',addMarks);
+	edi.on('deactivate',removeMarks); // done by script above
+	edi.on('activate',addMarks);
+	edi.on('real-input',addMarks);
 }
 */

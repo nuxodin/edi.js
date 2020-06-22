@@ -1,3 +1,6 @@
+import { Range } from "../../../x/Range.js";
+import domProxy from "../../../x/domProxy.js";
+
 /* CSS classes */
 function useClass(cl) { return cl.match(/^[A-Z]/); };
 let hasClasses; /* check if this-handle is used */
@@ -9,33 +12,30 @@ let check = function(el) {
     sopts.parentElement.style.display = hasClasses ? '' : 'none';
 }.c1Debounce(150);
 
-let sopts = Rte.ui.setSelect('Style', {
+let sopts = edi.ui.setSelect('Style', {
     check() {
         check();
-        let classes = Rte.element && Rte.element.className.split(' ').filter(useClass).join(' ') || 'Style';
+        let classes = edi.element && edi.element.className.split(' ').filter(useClass).join(' ') || 'Style';
         sopts.previousElementSibling.innerHTML = classes;
     },
     click() {
         sopts.innerHTML = '';
-        let el = qgSelection.isElement() || getSelection().isCollapsed ? Rte.element : null;
-        // if (el === Rte.active) return;
+
+        let range = Range.fromSelection();
+        let el = range.exactElement() || (range.collapsed ? edi.element : null);
+
         let classes = getPossibleClasses(el);
         for (let sty of Object.keys(classes)) {
             if (!useClass(sty)) return;
             let has = el && el.classList.contains(sty);
-            let d = c1.dom.fragment('<div class="'+sty+'">'+sty+'</div>').firstChild;
-            sopts.append(d);
-            has && d.classList.add('-selected');
-            d.onmousedown = function() {
-                Rte.manipulate(()=>{
+            let item = domProxy('<div class="'+sty+'">'+sty+'</div>')[0];
+            sopts.append(item);
+            has && item.classList.add('-selected');
+            item.onmousedown = ()=>{
+                edi.manipulate(()=>{
                     if (!el) {
-                        el = qgSelection.surroundContents(document.createElement('span'));
-                        if (getComputedStyle(el)['display'] === 'block') { // zzz
-                            console.warn('used?');
-                            let nEl = document.createElement('div');
-                            el.parentNode.replaceChild(nEl, el);
-                            qgSelection.toChildren(el);
-                        }
+                        el = document.createElement('span');
+                        Range.fromSelection().surround(el).select();
                     }
                     el.classList.toggle(sty, !has);
                 });
@@ -69,7 +69,7 @@ function getPossibleClasses(el) { /* eventuell better performance? */
 		if (sheet.href === null) {
 			try {
 				if (sheet.ownerNode.innerHTML === '') continue; // adblock chrome
-			} catch(e) { }
+			} catch {}
 		}
         try { // (not same domain) security error in ff
 			if (sheet.cssRules)
@@ -77,7 +77,7 @@ function getPossibleClasses(el) { /* eventuell better performance? */
 					if (!rule.selectorText) continue;
 	    			rule.selectorText.split(',').forEach(test);
 				}
-        } catch(e) { console.log(e); }
+        } catch(e) { console.error(e); }
 	}
 	return ret;
 };

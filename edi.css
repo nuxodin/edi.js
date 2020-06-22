@@ -20,6 +20,11 @@
 	outline-offset:1px;
 }
 
+html {
+    --edi-menu:LinkInput Bold Insertunorderedlist Link Removeformat Format Style;
+    --edi-menu-more:Italic Insertorderedlist Strikethrough Underline Hr Code Table Shy LinkTarget ImgOriginal ImgOriginalRetina ImageDimension Tree;
+}
+
 .qgRteToolbar {
 	position:absolute;
 	top:90px;

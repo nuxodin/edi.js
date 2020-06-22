@@ -1,0 +1,48 @@
+<div contenteditable id=editable>look the console<br> todo: real testing lib</div>
+
+<script type=module>
+import * as rte from "../x/rte.js";
+
+{
+    let tmpl = document.createElement('template');
+    tmpl.innerHTML = '<div><span><i></i>before <b>b</b> after<i></i></span></div>';
+    let root = tmpl.content.firstChild;
+    console.log(root.innerHTML)
+    rte.splitParentStartingWith(root.querySelector('b'));
+    console.log(root.innerHTML)
+    console.log(root.innerHTML === '<span><i></i>before </span><span><b>b</b> after<i></i></span>')
+}
+
+{
+    let tmpl = document.createElement('template');
+    tmpl.innerHTML = '<div><span><i></i>before <b>b</b> after<i></i></span></div>';
+    let root = tmpl.content.firstChild;
+    console.log(root.innerHTML)
+    rte.splitParentStartingWith(root.querySelector('b'), true);
+    console.log(root.innerHTML)
+    console.log(root.innerHTML === '<span><i></i>before <b>b</b></span><span> after<i></i></span>')
+}
+
+{
+    // self
+    let root = rte.rootOf(editable);
+    console.log(root === editable)
+}
+
+{
+    // inside
+    let root = rte.rootOf(editable.querySelector('br'));
+    console.log(root === editable)
+}
+{
+    // textNode
+    let root = rte.rootOf(editable.firstChild);
+    console.log(root === editable)
+}
+{
+    // textNode
+    let root = rte.rootOf(document.body);
+    console.log(root === false)
+}
+
+</script>

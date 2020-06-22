@@ -10,18 +10,19 @@ addEventListener('DOMContentLoaded',function(){
         if (!target.isContentEditable) return;
         var selection = getSelection();
 
-        var originalRange = selection.getRangeAt(0)
+        /* add selection endings */
+        var originalRange = selection.getRangeAt(0);
         var startRange = originalRange.cloneRange();
         var endRange = originalRange.cloneRange();
 
-
         endRange.collapse(false)
-        let marker2 = document.createTextNode('◀')
+        let marker2 = document.createTextNode('◀');
         endRange.insertNode(marker2);
 
         startRange.collapse(true);
-        let marker1 = document.createTextNode('▶')
+        let marker1 = document.createTextNode('▶');
         startRange.insertNode(marker1);
+        /* */
 
         var view = target.innerHTML;
 
@@ -33,7 +34,7 @@ addEventListener('DOMContentLoaded',function(){
 
         codeView.innerHTML = view;
 
-
+        return;
         var range = selection.getRangeAt(0);
         if (!range.startContainer.closest('[contenteditable]')) return;
 
@@ -41,13 +42,6 @@ addEventListener('DOMContentLoaded',function(){
             console.log(el)
             el.style.color = 'red';
         }
-        return
-
-        console.log('start rangeWalker');
-        for (let el of rte.rangeWalker(range)) {
-            console.log(el)
-        }
-        console.log('end rangeWalker');
 
 
 
@@ -63,21 +57,24 @@ addEventListener('DOMContentLoaded',function(){
 
 
 
-
-
     document.addEventListener('input',function(e){
-        updateDelayed(e.target)
+        update(e.target)
     });
     document.addEventListener('focus',function(e){
-        updateDelayed(e.target)
+        update(e.target)
     });
     document.addEventListener('blur',function(e){
-        updateDelayed(e.target)
+        update(e.target)
     }, true);
-    document.addEventListener('selectionchange',function(e){
-        var range = getSelection().getRangeAt(0)
-        var target = range.commonAncestorContainer.closest('[contenteditable]');
-        target && updateDelayed(target)
+    document.addEventListener('c1-selectionchange-write',function(e){
+        e.target.isContentEditable && update(e.target);
+
+        // chrome: reselect the image, not good on text selection changes
+        // const selection = getSelection();
+        // const range = selection.getRangeAt(0);
+        // selection.removeAllRanges();
+        // selection.addRange(range);
+
     });
 
 
@@ -94,9 +91,9 @@ addEventListener('DOMContentLoaded',function(){
         div.scrollTo({top:div.scrollHeight, left:0, behavior: 'smooth'});
     }
     document.addEventListener('input',log);
-    document.addEventListener('selectionchange',log);
-    document.addEventListener('blur',log);
-    document.addEventListener('focus',log);
+    document.addEventListener('c1-selectionchange-target',log);
+    document.addEventListener('blur',log, true);
+    document.addEventListener('focus',log, true);
 
 
 })

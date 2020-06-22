@@ -20,7 +20,7 @@ let fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,n
 // Special Elements (can contain anything)
 let special = makeMap("script,style");
 
-let HTMLParser  = function(html, handler) {
+export const HTMLParser = function(html, handler) {
 	let index, chars, match, stack = [], last = html;
 	stack.last = function() {
 		return this[ this.length - 1 ];
@@ -112,8 +112,7 @@ let HTMLParser  = function(html, handler) {
 
 		unary = empty[ tagName ] || !!unary;
 
-		if (!unary )
-			stack.push( tagName );
+		if (!unary) stack.push(tagName);
 
 		if (handler.start) {
 			let attrs = [];
@@ -122,7 +121,7 @@ let HTMLParser  = function(html, handler) {
 				let value = arguments[2] ? arguments[2] :
 					arguments[3] ? arguments[3] :
 					arguments[4] ? arguments[4] :
-					fillAttrs[name] ? name : "";
+					fillAttrs[name] ? name : '';
 
 				attrs.push({
 					name: name,
@@ -166,13 +165,9 @@ let HTMLParser  = function(html, handler) {
 		}
 	}
 };
+
 function makeMap(str) {
-	let obj = {}, items = str.split(",");
-	for (let i = 0; i < items.length; i++ )
-		obj[ items[i] ] = true;
+	const obj = {};
+	for (let item of str.split(",")) obj[item] = true;
 	return obj;
 }
-
-export {
-	HTMLParser
-};

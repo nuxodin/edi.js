@@ -1,20 +1,24 @@
 import * as rte from './../../../x/rte.js';
 
-let opts = Rte.ui.setSelect('Format',{
+let opts = edi.ui.setSelect('Format',{
 	click(e) {
 		let tag = e.target.getAttribute('value');
-		tag && qgExecCommand('formatblock',false,tag);
-		let stat = qgQueryCommandValue('formatblock');
+		if (!tag) return;
+		let range = getSelection().getRangeAt(0);
+		rte.block.format(range, tag);
+		range.select();
+return;
+		tag && rte.execCommand('formatblock',false,tag);
+	},
+	check() {
+		let stat = rte.queryCommandValue('formatblock');
+		opts.previousElementSibling.innerHTML = edi.element ? stat : 'Format';
 		for (let el of opts.children) {
 			el.className = el.tagName.toLowerCase()===stat ? '-selected' : '';
 		}
 	},
-	check() {
-		let stat = qgQueryCommandValue('formatblock');
-		opts.previousElementSibling.innerHTML = Rte.element ? stat : 'Format';
-	},
 	enable(e) {
-		return !rte.isBlockLess(Rte.active);
+		return !rte.isBlockLess(edi.active);
 	}
 });
 

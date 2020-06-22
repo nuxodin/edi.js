@@ -1,8 +1,8 @@
 
-Rte.ui.setItem('Shy',{
+edi.ui.setItem('Shy',{
     click(el) {
-        Rte.range.deleteContents();
-        Rte.range.insertNode(document.createTextNode('\u00AD'));
+        edi.range.deleteContents();
+        edi.range.insertNode(document.createTextNode('\u00AD'));
     },
     el: c1.dom.fragment('<div class="-item -button">Weiches Trennzeichen einfügen</div>').firstChild
 });
@@ -22,8 +22,8 @@ function addMarks(){
         if (!marker.firstChild) marker.remove();
     });
 
-    //matchText(Rte.active, new RegExp('\u00AD|\u00a0', 'g'), function(node, match, offset) {
-    matchText(Rte.active, new RegExp('\u00AD', 'g'), function(node, match, offset) {
+    //matchText(edi.active, new RegExp('\u00AD|\u00a0', 'g'), function(node, match, offset) {
+    matchText(edi.active, new RegExp('\u00AD', 'g'), function(node, match, offset) {
         if (node.parentNode.classList.contains('qgRte-mark-char')) return false;
         var span = document.createElement('span');
         span.className = 'qgRte-mark-char';
@@ -34,12 +34,12 @@ function addMarks(){
     });
 }
 function removeMarks(){
-    Rte.active.querySelectorAll('.qgRte-mark-char').forEach(el=>el.removeNode())
-    Rte.active.normalize();
+    edi.active.querySelectorAll('.qgRte-mark-char').forEach(el=>el.removeNode())
+    edi.active.normalize();
 }
-Rte.on('activate',addMarks);
-Rte.on('input',addMarks);
-Rte.on('deactivate',removeMarks);
+addEventListener('edi-activate',addMarks);
+addEventListener('edi-input',addMarks);
+addEventListener('edi-deactivate',removeMarks);
 
 
 var matchText = function(node, regex, callback, excludeElements) {
@@ -69,3 +69,36 @@ var matchText = function(node, regex, callback, excludeElements) {
     }
     return node;
 };
+
+
+
+
+
+
+/* show invisibles *
+{
+	function replaceContents(node){
+		for (const el of node.childNodes) replaceNode(el);
+	}
+	function replaceNode(node) {
+		if (node.nodeType === 3) { // text-nodes
+			let offset = 0;
+			for (const char of node.data) {
+				if (char === '\xa0') {  // nbsp
+					//var x = node.splitText(offset);
+				}
+				++offset;
+			}
+		} else {
+			replaceContents(node);
+		}
+	}
+	edi.ui.setItem('ShowInvisibleChars', {
+		click(e) {
+			let root = edi.active;
+			replaceContents(root);
+		}
+		,shortcut:'space'
+	});
+}
+*/

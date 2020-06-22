@@ -1,11 +1,11 @@
 import {NodeCleaner} from './x/NodeCleaner.js';
 
-/* cleaner */
+// cleaner
 {
 	let Cleaner;
-	Rte.on('input', function() {
+	addEventListener('edi-input', function(e){
 		if (!Cleaner) Cleaner = new NodeCleaner();
-		Cleaner.cleanContents(Rte.active, true);
+		Cleaner.cleanContents(e.target, true);
 	});
 }
 
@@ -13,7 +13,7 @@ import {NodeCleaner} from './x/NodeCleaner.js';
 {
 	let check = function(e){
 		let child;
-		for (child of Rte.active.childNodes) {
+		for (child of edi.active.childNodes) {
 			if (child.tagName === 'LI') continue;
 			if (child.nodeType === 3 && !child.textContent.trim()) continue;
 			if (child.nodeName === 'UL') {
@@ -25,16 +25,17 @@ import {NodeCleaner} from './x/NodeCleaner.js';
 			li.append(child);
 		}
 	}
-	Rte.on('activate',()=>{
-		if (Rte.active.tagName !== 'UL') return;
+	addEventListener('edi-activate', function(e){
+		if (e.target.tagName !== 'UL') return;
 		check()
-		Rte.active.addEventListener('input', check);
+		e.target.addEventListener('input', check);
 	});
-	Rte.on('deactivate',()=>{
-		if (Rte.active.tagName !== 'UL') return;
-		Rte.active.removeEventListener('input', check);
+	addEventListener('edi-deactivate', function(e){
+		if (e.target.tagName !== 'UL') return;
+		e.target.removeEventListener('input', check);
 	});
 }
+
 /* force p tag inside contenteditable divs */
 document.addEventListener('input',function(e){
 	if (!e.target.isContentEditable) return;

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang=de>
+    <meta charset="utf-8">
+    <title>edi.js - Tests</title>
+<body>
+
+<script>
+
+let preventReqursion = false;
+document.addEventListener('selectionchange', e=>{
+    if (preventReqursion) return;
+    preventReqursion = true;
+    document.activeElement.dispatchEvent( new CustomEvent('c1-selectionchange-write', {bubbles:true}) )
+    setTimeout(e=>{ // better requestAnimationFrame?
+        preventReqursion = false;
+    }, 10); // how long?
+}, true);
+
+
+/*
+let selChangeEndTimeout = null;
+document.addEventListener('selectionchange', e=>{
+    clearTimeout(selChangeEndTimeout);
+    selChangeEndTimeout = setTimeout(e=>{ // better requestAnimationFrame?
+        document.activeElement.dispatchEvent( new CustomEvent('c1-selectionchange-end', {bubbles:true}) )
+    }, 300);
+}, true);
+*/
+
+
+
+
+function logEvent(e){
+    const sel = getSelection();
+    const tr = '<tr>'+
+        '<td>' + e.type +
+        '<td>' + sel.anchorNode +
+        '<td>' + sel.anchorOffset +
+        '<td>' + sel.focusNode +
+        '<td>' + sel.focusOffset +
+        '<td>' + preventReqursion +
+        ''
+    console.dir(e);
+    console.log(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset);
+    consol.insertAdjacentHTML('beforeend', tr);
+}
+document.addEventListener('selectstart',logEvent);
+document.addEventListener('selectionchange',logEvent);
+document.addEventListener('c1-selectionchange-write',logEvent);
+document.addEventListener('c1-selectionchange-end',logEvent);
+
+document.addEventListener('c1-selectionchange-write',function(e){
+    const sel = getSelection();
+    sel.modify('extend', 'left', 'character')
+})
+
+
+
+</script>
+
+<div contenteditable>test contenteditable</div>
+
+<div style="overflow:auto; max-height:80vh; display:inline-block; border:1px solid red">
+<table>
+    <tbody id=consol>
+</table>
+</div>

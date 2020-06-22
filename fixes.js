@@ -1,34 +1,5 @@
 /* Copyright (c) 2016 Tobias Buschor https://goo.gl/gl0mbf | MIT License https://goo.gl/HgajeK */
 
-window.qgQueryCommandState = function(cmd) {
-	try{
-		return document.queryCommandState(cmd);
-	} catch(e) { /*zzz*/ }
-};
-window.qgQueryCommandValue = function(cmd) {
-	try{
-		return document.queryCommandValue(cmd);
-	} catch(e) { /*zzz*/ }
-};
-window.qgExecCommand = function(com,x,val) {
-	let _ = qgExecCommand;
-	if (!_.cmdUsed) {
-		try {
-			document.execCommand("styleWithCSS", false, false);
-		} catch (e) {}
-		_.cmdUsed = true;
-	}
-	switch (com) {
-		case 'formatblock':
-			document.execCommand(com,x,val);
-			break;
-		default:
-			try {
-				document.execCommand(com,x,val);
-			} catch(e) {}
-	}
-};
-
 Selection.prototype.c1GetRange = function() {
 	return this.rangeCount ? this.getRangeAt(0) : null;
 };
@@ -36,25 +7,6 @@ Selection.prototype.c1SetRange = function(range) {
 	this.removeAllRanges();
 	this.addRange(range);
 };
-/*
-Selection.prototype.c1AnchorElement = function() {
-	const node = this.anchorNode;
-	return node.nodeType === 1 ? node : node.parentNode;
-};
-Selection.prototype.c1FocusElement = function() {
-	const node = this.focusNode;
-	return node.nodeType === 1 ? node : node.parentNode;
-};
-Range.prototype.c1Insert = function(node) {
-	if (node instanceof Array) {
-		for (let n of node) this.insertNode(n);
-		//for (var i=0, n ; n = node[i++];) this.insertNode(n);
-		return;
-	}
-	if (typeof node === 'string') node = document.createTextNode(node);
-	this.insertNode(node);
-};
-*/
 
 window.qgSelection = {
 	element() {
@@ -77,40 +29,82 @@ window.qgSelection = {
 		let text = el.textContent || el.innerText || '';
 		return text === this.text();
 	},
-	toElement(el) {
-		let r = document.createRange();
-		r.selectNode(el);
-		getSelection().c1SetRange(r);
-	},
-	toChildren(el) {
-		let r = document.createRange();
-		r.selectNodeContents(el);
-		getSelection().c1SetRange(r);
-	},
-	surroundContents(el) {
-		let range = getSelection().c1GetRange();
-		range.surroundContents(el);
-		qgSelection.toChildren(el);
-		return el;
-	},
 	collapse(where) {
-		try { // firefox has an error
+		//try { // firefox has an error
 			where === 'start' ? getSelection().collapseToStart() : getSelection().collapseToEnd();
-		} catch(e) {}
+		//} catch(e) {}
 	},
 	rect() {
 		let r = getSelection().c1GetRange();
 		let pos = r.getBoundingClientRect();
-		if (r.collapsed && pos.top===0 && pos.left ===0) { // bug in chrome, webkit
+		if (r.collapsed && pos.top===0 && pos.left ===0) { // firefox 77 / chrome / webkit
+			console.warn('position top:0 && left:0 !', r);
 			let tmpNode = document.createTextNode('\ufeff');
-			r.insertNode(tmpNode);
-			pos = r.getBoundingClientRect();
-			r.setStartAfter(tmpNode);
-			tmpNode.remove();
+			hideFromSelectionchange(()=>{
+				r.insertNode(tmpNode);
+				pos = r.getBoundingClientRect();
+				//r.setStartAfter(tmpNode); // zzz?
+				tmpNode.remove();
+			})
 		}
 		return pos;
 	}
 };
+
+
+// silent manipulation
+let ignoreSelectionChange = false;
+let timeout = null;
+const hideFromSelectionchange = function(fn){
+	ignoreSelectionChange = true;
+	fn();
+	clearTimeout(timeout);
+	// needs timeout, cause manipulations trigger async selectionchange
+	// bad its async, maybe some important event get lost...?
+	// how long should i wait? // better requestAnimationFrame?
+	timeout = setTimeout(()=>ignoreSelectionChange = false, 10);
+}
+document.addEventListener('selectionchange', e=>{
+	ignoreSelectionChange && e.stopImmediatePropagation();
+}, true);
+
+
+
+// debug only: detect selection recursion // zzz?
+if (1 /* debug */) {
+	let count = 0;
+	document.addEventListener('selectionchange', e=>{
+		if (count++ > 10) {
+			console.error('recursion detected!');
+			e.stopImmediatePropagation();
+		}
+		setTimeout(e=>count--,50);
+	}, true);
+}
+
+
+//let preventReqursion = false;
+document.addEventListener('selectionchange', e=>{
+	const target = document.activeElement;
+
+	// c1-selectionchange-target triggers on activeElement
+	target.dispatchEvent( new CustomEvent('c1-selectionchange-target', {bubbles:true}) );
+
+	// c1-selectionchange-write that prevents recursion and triggers on activeElement
+	hideFromSelectionchange(()=>{
+		target.dispatchEvent( new CustomEvent('c1-selectionchange-write', {bubbles:true}) );
+	})
+
+	/*
+	if (preventReqursion) return;
+    preventReqursion = true;
+    target.dispatchEvent( new CustomEvent('c1-selectionchange-write', {bubbles:true}) );
+    setTimeout(e=>{ // better requestAnimationFrame?
+        preventReqursion = false;
+	}, 10); // how long?
+	*/
+}, true);
+
 
 // if contenteditable inside a link: do not follow
 document.addEventListener('click', e=>{
@@ -120,7 +114,7 @@ document.addEventListener('click', e=>{
 	target && target.isContentEditable && e.preventDefault(); // keyboard click firefox
 });
 
-// prevent (Firefox) placing cursor incorrectly
+// prevent (Firefox) placing cursor incorrectly in links
 document.addEventListener('mousedown', e=>{
 	if (!e.target.isContentEditable) return;
 	var link = e.target.closest('a');
@@ -143,53 +137,56 @@ document.addEventListener('mousedown', e=>{
 	if (e.button !== 0) return;
 	if (!e.target.isContentEditable) return;
 	if (e.target.tagName !== 'IMG') return;
-	qgSelection.toElement(e.target);
+
+	let r = document.createRange();
+	r.selectNode(e.target);
+	getSelection().c1SetRange(r);
+
 }, true); // capture => if inside stoppropagation
 
 
 
-
 /* contenteditable focus bug */
-if (/AppleWebKit\/([\d.]+)/.exec(navigator.userAgent) && document.caretRangeFromPoint) {
+if (/AppleWebKit\/([\d.]+)/.exec(navigator.userAgent) && document.caretRangeFromPoint) { // chrome / webkit
     document.addEventListener('DOMContentLoaded', ()=>{
         let fixEl = document.createElement('input');
         fixEl.style.cssText = 'width:1px;height:1px;border:none;margin:0;padding:0; position:fixed; top:0; left:0';
-        fixEl.tabIndex = -1;
+		fixEl.tabIndex = -1;
+
+		// new:
+		addEventListener('focus',e=>e.target===fixEl && e.stopImmediatePropagation() ,true);
+		addEventListener('blur',e=>e.target===fixEl && e.stopImmediatePropagation() ,true);
+		document.addEventListener('selectionchange',e=> document.activeElement===fixEl && e.stopImmediatePropagation() ,true);
+
         let shouldNotFocus = null;
         function fixSelection(){
             document.body.appendChild(fixEl);
             fixEl.focus();
             fixEl.setSelectionRange(0,0);
-            setTimeout(function(){
-                document.body.removeChild(fixEl);
-            },100)
+            setTimeout(() => document.body.removeChild(fixEl) ,100);
         }
         function checkMouseEvent(e){
             if (e.target.isContentEditable) return;
             let range = document.caretRangeFromPoint(e.clientX, e.clientY);
 			if (!range) return;
-            let wouldFocus = getContentEditableRoot(range.commonAncestorContainer);
+            let wouldFocus = ceRoot(range.commonAncestorContainer);
             if (!wouldFocus || wouldFocus.contains(e.target)) return;
             shouldNotFocus = wouldFocus;
-            setTimeout(()=>{
-                shouldNotFocus = null;
-            });
-            if (e.type === 'mousedown') {
-                document.addEventListener('mousemove', checkMouseEvent, false);
-            }
+            setTimeout(() => shouldNotFocus = null );
+            if (e.type === 'mousedown') addEventListener('mousemove', checkMouseEvent);
         }
-        document.addEventListener('mousedown', checkMouseEvent, false);
-        document.addEventListener('mouseup', ()=>{
-                document.removeEventListener('mousemove', checkMouseEvent, false);
-        }, false);
-        document.addEventListener('focus', e=>{
+        addEventListener('mousedown', checkMouseEvent);
+        addEventListener('mouseup', () => removeEventListener('mousemove', checkMouseEvent) );
+        addEventListener('focus', e=>{
             if (e.target !== shouldNotFocus) return;
-            if (!e.target.isContentEditable) return;
+			if (!e.target.isContentEditable) return;
+			e.stopImmediatePropagation(); // new
             fixSelection();
         }, true);
-        document.addEventListener('blur', e=>{
+        addEventListener('blur', e=>{
 			if (e.target !== shouldNotFocus) return;
         	if (!e.target.isContentEditable) return;
+			e.stopImmediatePropagation(); // new
         	setTimeout(()=>{
         		if (document.activeElement === e.target) return;
         		if (!e.target.contains(getSelection().baseNode)) return;
@@ -199,16 +196,13 @@ if (/AppleWebKit\/([\d.]+)/.exec(navigator.userAgent) && document.caretRangeFrom
     });
 }
 
-function getContentEditableRoot(el) {
-    if (el.nodeType === 3) el = el.parentNode;
-    if (!el.isContentEditable) return false;
-    while (el) {
-        let next = el.parentNode;
-        if (next.isContentEditable) {
-            el = next;
-            continue
-        }
-        return el;
+function ceRoot(node) {
+    if (node.nodeType === 3) node = node.parentNode;
+    if (!node.isContentEditable) return false;
+    while (node) {
+        let next = node.parentNode;
+        if (!next.isContentEditable) return node;
+        node = next;
     }
 }
 
@@ -224,7 +218,7 @@ document.addEventListener('input',e=>{
 	}
 });
 
-/* prevent select on contextmenu */
+/* on contextmenu: prevent select */
 document.addEventListener('mousedown',e=>{
 	if (!e.target.isContentEditable) return;
 	e.which === 3 && e.preventDefault();

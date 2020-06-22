@@ -1,4 +1,5 @@
 
+import {Range} from '../../../x/Range.js';
 
 import {indent} from './html-indent.js';
 
@@ -27,23 +28,17 @@ wrapper.addEventListener('keydown', makeInvisible);
 wrapper.addEventListener('mousemove', makeInvisible);
 
 let html = wrapper.firstChild;
-let el = Rte.ui.setItem('Code', {
+let el = edi.ui.setItem('Code', {
 	click() {
-		let el = Rte.active;
-		let sel = window.getSelection();
+		let el = edi.active;
 		let code;
-		if (sel.rangeCount > 0) {
-			let range = sel.getRangeAt(0);
+		const range = Range.fromSelection();
+		if (range) {
 			let startTextNode = document.createTextNode('marker_start_so9df8as0f0');
 			let endTextNode   = document.createTextNode('marker_end_laseg08a0egga');
-			let tmpRange = range.cloneRange();
-			tmpRange.collapse(false);
-			tmpRange.insertNode(endTextNode);
-			tmpRange = range.cloneRange();
-			tmpRange.collapse(true);
-			tmpRange.insertNode(startTextNode);
+			range.clone().collapse(false).insert(endTextNode);
+			range.clone().collapse(true).insert(startTextNode);
 			code = indent(el.innerHTML);
-
 			startTextNode.remove();
 			endTextNode.remove();
 

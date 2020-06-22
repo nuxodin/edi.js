@@ -1,5 +1,6 @@
 /* Copyright (c) 2016 Tobias Buschor https://goo.gl/gl0mbf | MIT License https://goo.gl/HgajeK */
 
+import './c1.js';
 
 var w = window,
 	d = document,
@@ -23,7 +24,7 @@ c1.dom.fragment = function(html){
 
 d.cookie = "q1_dpr=" + devicePixelRatio + "; path=/";
 
-/* custom el properties */
+// custom el properties
 var poly = {
 	c1Id: function() {
 		return this.getAttribute('id') || (this.id = 'c1-gen-'+(autoId++));

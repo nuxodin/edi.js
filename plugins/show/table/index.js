@@ -4,12 +4,12 @@ import {tableHandles as tH} from '../../../x/tableHandles.js';
 
 let td, tr, table, index;
 let handles = new tH();
-Rte.on('deactivate',() => handles.hide() );
+addEventListener('edi-deactivate',() => handles.hide() );
 function positionize() {
-    let e = Rte.element;
+    let e = edi.element;
     if (!e) return;
     td = e.closest('td');
-    if (Rte.active && Rte.active.contains(td)) {
+    if (edi.active && edi.active.contains(td)) {
         tr = td.parentNode;
         table = tr.closest('table');
         index = td.cellIndex;
@@ -18,7 +18,10 @@ function positionize() {
         handles.hide();
     }
 }
-Rte.on('elementchange activate', positionize);
+
+addEventListener('edi-selectionchange', positionize);
+addEventListener('edi-activate', positionize);
+
 handles.root.addEventListener('click',e=>{
     if (e.target.classList.contains('-rowRemove')) {
         tr.remove();
@@ -42,5 +45,5 @@ handles.root.addEventListener('click',e=>{
     !hasTds && table.remove();
     getSelection().modify('move', 'right', 'character'); // chrome bug
     getSelection().modify('move', 'left', 'character');
-    Rte.checkSelection();
+    edi.checkSelection();
 });

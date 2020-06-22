@@ -1,4 +1,7 @@
 /* Copyright (c) 2016 Tobias Buschor https://goo.gl/gl0mbf | MIT License https://goo.gl/HgajeK */
+
+import './c1Dom.js';
+
 export class tableHandles {
 	constructor(){
 
@@ -37,10 +40,10 @@ export class tableHandles {
 			'}'+
 			'</style>'+
 		'</div>').firstChild;
-		this.rowRemove = this.root.c1Find('.-rowRemove');
-		this.rowAdd    = this.root.c1Find('.-rowAdd');
-		this.colAdd    = this.root.c1Find('.-colAdd');
-		this.colRemove = this.root.c1Find('.-colRemove');
+		this.rowRemove = this.root.querySelector('.-rowRemove');
+		this.rowAdd    = this.root.querySelector('.-rowAdd');
+		this.colAdd    = this.root.querySelector('.-colAdd');
+		this.colRemove = this.root.querySelector('.-colRemove');
 		this.root.addEventListener('mousedown',e=>e.preventDefault());
 	}
 	showTd(td) {

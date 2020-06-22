@@ -1,46 +1,44 @@
 /* Copyright (c) 2016 Tobias Buschor https://goo.gl/gl0mbf | MIT License https://goo.gl/HgajeK */
 
-/*
-let x = my.setItem('Bold',
-	{
-		shortcut:'l'
-	}
-);
-x.addEventListener('mousedown', function() {
-	Rte.modifySelection(function(els) {
-		let first = $(els[1]||els[0]);
-		let act = first.hasClass('SmallText') ? 'removeClass' : 'addClass';
-		for (let i = els.length, el; el = els[--i];) {
-			$(el)[act]('SmallText');
-		}
-	});
-});
-*/
 import * as rte from './x/rte.js';
 
+import './plugins/show/table/index.js';
+import './plugins/show/shy/index.js';
+import './plugins/show/br/index.js';
+import './plugins/show/imageResize/index.js';
+
+import './plugins/menu/code/index.js';
+import './plugins/menu/styles/index.js';
+import './plugins/menu/clean/index.js';
+import './plugins/menu/bold/index.js';
+import './plugins/menu/italic/index.js';
+import './plugins/menu/unorderedList/index.js';
+import './plugins/menu/orderedList/index.js';
+import './plugins/menu/headings/index.js';
+import './plugins/menu/insertTable/index.js';
 
 
-Rte.ui.setItem('Underline', 			{cmd:'underline',	shortcut:'u', xenable:':not(img)'});
-Rte.ui.setItem('Undo', 					{cmd:'undo',	check:false});
-Rte.ui.setItem('Redo', 					{cmd:'redo',	check:false});
-Rte.ui.setItem('Unlink', 				{cmd:'unlink',	check:false});
-Rte.ui.setItem('Hr', 					{cmd:'inserthorizontalrule', check:false, enable(){ return !rte.isBlockLess(Rte.active); } });
-Rte.ui.setItem('Strikethrough', 		{cmd:'strikethrough', xenable:':not(img)'});
+edi.ui.setItem('Underline', 			{cmd:'underline',	shortcut:'u', enable:':not(img)'});
+edi.ui.setItem('Undo', 					{cmd:'undo',	check:false});
+edi.ui.setItem('Redo', 					{cmd:'redo',	check:false});
+edi.ui.setItem('Unlink', 				{cmd:'unlink',	check:false});
+edi.ui.setItem('Hr', 					{cmd:'inserthorizontalrule', check:false, enable(){ return !rte.isBlockLess(edi.active); } });
+edi.ui.setItem('Strikethrough', 		{cmd:'strikethrough', xenable:':not(img)'});
 
 /* bred-crumb *
 let list = $('<div style="padding:2px; margin:2px; color:#000; background:linear-gradient(#fff,#ccc); xborder-radius:3px; box-shadow: 0 0 1px #000;">');
-Rte.ui.setItem( 'Tree', {
+edi.ui.setItem( 'Tree', {
 	el:list[0],
 	//enable(el) {  },
 	check(el) {
 		list.html('');
-		if (el===Rte.active) return;
-		$(el).parentsUntil(Rte.active).addBack().each(function(i,el) {
+		if (el===edi.active) return;
+		$(el).parentsUntil(edi.active).addBack().each(function(i,el) {
 			let btn = $('<span style="border-right:1px solid #bbb; padding:1px 3px; cursor:pointer">'+el.tagName+'</span>')
 			.on({
 				click() {
-					qgSelection.toChildren(el);
-					Rte.checkSelection();
+					Range.fromSelection().toContents().select();
+					edi.checkSelection();
 				},
 				mouseover(e) {
 					$('.tmp-rgRteMarked').removeClass('tmp-rgRteMarked');
@@ -54,56 +52,17 @@ Rte.ui.setItem( 'Tree', {
 });
 
 
-/* show invisibles *
-{
-	function replaceContents(node){
-		for (const el of node.childNodes) replaceNode(el);
-	}
-	function replaceNode(node) {
-		if (node.nodeType === 3) { // text-nodes
-			let offset = 0;
-			for (const char of node.data) {
-				if (char === '\xa0') {  // nbsp
-					//var x = node.splitText(offset);
-				}
-				++offset;
-			}
-		} else {
-			replaceContents(node);
-		}
-	}
-	Rte.ui.setItem('ShowInvisibleChars', {
-		click(e) {
-			let root = Rte.active;
-			replaceContents(root);
-		}
-		,shortcut:'space'
-	});
-}
 
 
 
 
-/* insert table */
-Rte.ui.setItem('Table', {
-	click() {
-		let table = c1.dom.fragment('<table><tr><td>&nbsp;<td>&nbsp;<tr><td>&nbsp;<td>&nbsp;</table>').firstChild;
-		let r = getSelection().getRangeAt(0);
-		r.deleteContents();
-		r.insertNode(table);
-		getSelection().collapse(table.c1Find('td'),0);
-	},
-	enable(){
-		return !rte.isBlockLess(Rte.active);
-	}
-});
 /* delete Element */
-Rte.ui.setItem('Del',{
-	click(el) { Rte.element.removeNode(); },
+edi.ui.setItem('Del',{
+	click(el) { edi.element.removeNode(); },
 	el: c1.dom.fragment('<a style="color:red">Element löschen</a>').firstChild
 });
 /* Target */
-Rte.ui.setItem('LinkTarget', {
+edi.ui.setItem('LinkTarget', {
 	enable:'a, a > *',
 	check(el) {
 		el = el.closest('a');
@@ -111,12 +70,12 @@ Rte.ui.setItem('LinkTarget', {
 		return target && target !== '_self';
 	},
 	click(){
-		let el = Rte.element.closest('a');
+		let el = edi.element.closest('a');
 		let active = this.el.classList.contains('active');
 		el.setAttribute('target', active?'_self':'_blank');
-		Rte.trigger('input');
-		Rte.active.focus();
-		Rte.trigger('elementchange');
+		edi.trigger('input');
+		edi.active.focus();
+		//edi.trigger('elementchange');
 	},
 	el: c1.dom.fragment('<div class="-item -button">Link in neuem Fenster</div>').firstChild
 });
@@ -125,11 +84,11 @@ Rte.ui.setItem('LinkTarget', {
 	let el = c1.dom.fragment('<table style="clear:both"><tr><td style="width:84px">Titel<td><input>').firstChild;
 	let inp = el.c1Find('input');
 	inp.addEventListener('keyup', function() {
-		Rte.element.setAttribute('title',inp.value);
-		!inp.value && Rte.element.removeAttribute('title');
-		Rte.trigger('input');
+		edi.element.setAttribute('title',inp.value);
+		!inp.value && edi.element.removeAttribute('title');
+		edi.trigger('input');
 	});
-	Rte.ui.setItem('AttributeTitle',{
+	edi.ui.setItem('AttributeTitle',{
 		check(el) {
 			inp.value = el ? el.getAttribute('title') : '';
 		},
@@ -144,17 +103,17 @@ Rte.ui.setItem('LinkTarget', {
 			'<tr><td title="Alternativer Text">Alt-Text:<td><input class=-alt>'+
 		'</table>').firstChild;
 	inp.addEventListener('keyup',e=>{
-		let img = Rte.element;
+		let img = edi.element;
 		img.style.width  = inp.c1Find('.-x').value+'px';
 		img.style.height = inp.c1Find('.-y').value+'px';
 		img.setAttribute('alt', inp.c1Find('.-alt').value);
 		if (e.target.classList.contains('-x') || e.target.classList.contains('-y')) {
-			Rte.element.dispatchEvent(new Event('qgResize',{bubbles:true}));
+			edi.element.dispatchEvent(new Event('qgResize',{bubbles:true}));
 		}
-		Rte.active.dispatchEvent(new Event('input',{'bubbles':true,'cancelable':true})); // used!
-		Rte.trigger('input'); // used?
+		edi.active.dispatchEvent(new Event('input',{'bubbles':true,'cancelable':true})); // used!
+		edi.trigger('input'); // used?
 	})
-	Rte.ui.setItem('ImageDimension', {
+	edi.ui.setItem('ImageDimension', {
 		check(el) {
 			inp.c1Find('.-x').value = el.offsetWidth;
 			inp.c1Find('.-y').value = el.offsetHeight;
@@ -181,10 +140,10 @@ function ImageRealSize(url, cb) {
 
 
 /* original image */
-Rte.ui.setItem('ImgOriginal', {
+edi.ui.setItem('ImgOriginal', {
 	enable: 'img',
 	click(e) {
-		let img = Rte.element;
+		let img = edi.element;
 		let url = img.getAttribute('src').replace(/\/(w|h|zoom|vpos|hpos|dpr)-[^\/]+/g,'');
 		ImageRealSize(url, function(w,h) {
 			w /= 2; h /= 2; // vorgängig wird dem Server per Cookie mitteilt, dass er er die doppelte Auflösung ausliefern soll
@@ -196,22 +155,10 @@ Rte.ui.setItem('ImgOriginal', {
 			img.setAttribute('height',h);
 			img.style.width  = w+'px';
 			img.style.height = h+'px';
-			Rte.element.dispatchEvent(new Event('qgResize',{bubbles:true})); // new
-			Rte.trigger('input');
-			Rte.trigger('elementchange');
+			edi.element.dispatchEvent(new Event('qgResize',{bubbles:true})); // new
+			edi.trigger('input');
+			//edi.trigger('elementchange');
 		}
 	},
 	el: c1.dom.fragment('<span class="-item -button" title="Originalgrösse">Originalbild</span>').firstChild
 });
-
-
-
-Rte.ui.config = {
-	rteDef:{
-		main:['LinkInput','Bold','Insertunorderedlist','Link','Removeformat','Format','Style'],
-		more:['Italic','Insertorderedlist','Strikethrough','Underline','Hr','Code','Table','Shy',/*'ShowInvisibleChars',*/'LinkTarget','ImgOriginal','ImgOriginalRetina',/*'AttributeTitle',*/'ImageDimension','Tree']
-	},
-	rteMin:{
-		main:['Bold','Insertunorderedlist','Link','Style']
-	},
-};

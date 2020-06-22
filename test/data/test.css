@@ -1,0 +1,7 @@
+html {
+    --edi:true;
+}
+body {
+    padding:1em;
+    display:flex;
+}

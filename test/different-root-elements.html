@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang=de>
+    <meta charset="utf-8">
+    <title>edi.js - Tests</title>
+    <script src="../index.js" type=module></script>
+    <script src="./data/test.js" type=module></script>
+    <link rel="stylesheet" href="./data/test.css">
+    <link rel="stylesheet" href="../edi.css">
+
+    <style>
+        .Big {
+            font-size:2em;
+        }
+        [contenteditable] {
+            outline:1px solid red;
+        }
+        .-items > * {
+            margin:2em;
+        }
+
+    </style>
+
+<body>
+
+<div class=-items>
+
+    <div contenteditable>Div</div>
+
+    <div style="height:100px; overflow:auto;">
+        <div contenteditable style="position:absolute; overflow:auto; height:inherit">Div position:absolute and overflow:auto</div>
+    </div>
+
+    <ul contenteditable>UL Element (this text is not insidede li) <li>LI</li></ul>
+
+    <a href="/" contenteditable>A - a Link-Element</a>
+
+    <form>
+        <button type=submit contenteditable>BUTTON inside form</button>
+    </form>
+
+    <table>
+        <tr>
+            <td contenteditable>a Table-Cell Element</td>
+    <table>
+
+    <table>
+        <tr contenteditable>
+            TR-Element Not inside TD! (will not work)
+            <td>TD The TR is contenteditable</td>
+            <td>TD2</td>
+    <table>
+
+    <table contenteditable>
+        <tbody>
+            <tr>
+                <td >TD (the table is contenteditable)</td>
+                <td >TD (the table is contenteditable)</td>
+            <tr>
+                <td >TD (the table is contenteditable)</td>
+                <td >TD (the table is contenteditable)</td>
+    <table>
+
+
+
+</div>

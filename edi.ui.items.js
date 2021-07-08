@@ -17,6 +17,7 @@ import './plugins/menu/orderedList/index.js';
 import './plugins/menu/headings/index.js';
 import './plugins/menu/insertTable/index.js';
 
+//dispatchEvent(new CustomEvent('edi-ready')); // new way to add plugins modules
 
 edi.ui.setItem('Underline', 			{cmd:'underline',	shortcut:'u', enable:':not(img)'});
 edi.ui.setItem('Undo', 					{cmd:'undo',	check:false});
@@ -25,7 +26,7 @@ edi.ui.setItem('Unlink', 				{cmd:'unlink',	check:false});
 edi.ui.setItem('Hr', 					{cmd:'inserthorizontalrule', check:false, enable(){ return !rte.isBlockLess(edi.active); } });
 edi.ui.setItem('Strikethrough', 		{cmd:'strikethrough', xenable:':not(img)'});
 
-/* bred-crumb *
+/* bread-crumb *
 let list = $('<div style="padding:2px; margin:2px; color:#000; background:linear-gradient(#fff,#ccc); xborder-radius:3px; box-shadow: 0 0 1px #000;">');
 edi.ui.setItem( 'Tree', {
 	el:list[0],

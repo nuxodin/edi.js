@@ -11,7 +11,7 @@ import {NodeCleaner} from './x/NodeCleaner.js';
 
 /* force li's in contenteditable uls */
 {
-	let check = function(e){
+	const check = function(e){
 		let child;
 		for (child of edi.active.childNodes) {
 			if (child.tagName === 'LI') continue;
@@ -110,7 +110,7 @@ document.addEventListener('input',function(e){
 
 /* prevent phx inside phx */
 {
-	let PHX = {P:1,H1:1,H2:1,H3:1,H4:1,H5:1,H6:1,};
+	const PHX = {P:1,H1:1,H2:1,H3:1,H4:1,H5:1,H6:1,};
 	document.addEventListener('input',function(e){
 		if (!e.target.isContentEditable) return;
 		const check = function(node) {
